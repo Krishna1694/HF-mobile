@@ -1,0 +1,42 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.zion.mobile"
+4    android:versionCode="1"
+5    android:versionName="0.1" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+11-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:1-67
+11-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:18-64
+12
+13    <application
+13-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:5:5-20:19
+14        android:debuggable="true"
+15        android:extractNativeLibs="false"
+16        android:label="Zion"
+16-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:9-29
+17        android:theme="@style/AppTheme" >
+17-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:6:9-40
+18        <activity
+18-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:9:9-18:20
+19            android:name="com.zion.mobile.MainActivity"
+19-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:13-41
+20            android:exported="true" >
+20-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:13-36
+21            <intent-filter>
+21-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:13-16:29
+22                <action android:name="android.intent.action.MAIN" />
+22-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:17-69
+22-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:25-66
+23
+24                <category android:name="android.intent.category.LAUNCHER" />
+24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:17-77
+24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:27-74
+25            </intent-filter>
+26        </activity>
+27    </application>
+28
+29</manifest>

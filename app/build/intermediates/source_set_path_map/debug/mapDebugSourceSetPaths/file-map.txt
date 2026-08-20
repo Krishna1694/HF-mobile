@@ -1,0 +1,8 @@
+com.zion.mobile.app-pngs-0 /workspaces/HF-mobile/app/build/generated/res/pngs/debug
+com.zion.mobile.app-resValues-1 /workspaces/HF-mobile/app/build/generated/res/resValues/debug
+com.zion.mobile.app-updated_navigation_xml-2 /workspaces/HF-mobile/app/build/generated/updated_navigation_xml/debug
+com.zion.mobile.app-packageDebugResources-3 /workspaces/HF-mobile/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.zion.mobile.app-packageDebugResources-4 /workspaces/HF-mobile/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.zion.mobile.app-debug-5 /workspaces/HF-mobile/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.zion.mobile.app-debug-6 /workspaces/HF-mobile/app/src/debug/res
+com.zion.mobile.app-main-7 /workspaces/HF-mobile/app/src/main/res
