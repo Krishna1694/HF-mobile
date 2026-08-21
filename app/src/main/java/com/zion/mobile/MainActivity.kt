@@ -71,9 +71,10 @@ class MainActivity : Activity() {
                     results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
 
                 val text = matches?.firstOrNull() ?: return
-
                 resultText.text = text
-                processCommand(text)
+
+                val command = parseCommand(text)
+                executeCommand(command)
             }
 
             override fun onError(error: Int) {
@@ -102,17 +103,25 @@ class MainActivity : Activity() {
         speechRecognizer.startListening(intent)
     }
 
-    private fun processCommand(text: String) {
-        when {
-            text.contains("hello") -> {
+    private fun parseCommand(text: String): CommandIntent {
+        return when {
+            text.contains("hello") -> CommandIntent.GREETING
+            text.contains("your name") -> CommandIntent.GET_NAME
+            else -> CommandIntent.UNKNOWN
+        }
+    }
+
+    private fun executeCommand(command: CommandIntent) {
+        when (command) {
+            CommandIntent.GREETING -> {
                 speak("Hello! How can I help?")
             }
 
-            text.contains("your name") -> {
+            CommandIntent.GET_NAME -> {
                 speak("My name is Zion.")
             }
 
-            else -> {
+            CommandIntent.UNKNOWN -> {
                 speak("I don't understand that yet.")
             }
         }
