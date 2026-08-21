@@ -3,18 +3,20 @@ package com.zion.mobile
 import android.Manifest
 import android.app.Activity
 import android.os.Bundle
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import android.content.Intent
 import android.widget.Button
 import android.widget.TextView
 import android.widget.LinearLayout
 import android.content.pm.PackageManager
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 
 class MainActivity : Activity() {
 
     private lateinit var speechRecognizer: SpeechRecognizer
+    private lateinit var textToSpeech: TextToSpeech
     private lateinit var resultText: TextView
 
 
@@ -44,6 +46,12 @@ class MainActivity : Activity() {
             }
         }
 
+        textToSpeech = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                speak("I'm UP")
+            }
+        }
+
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(40, 100, 40, 40)
@@ -62,7 +70,10 @@ class MainActivity : Activity() {
                 val matches =
                     results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
 
-                resultText.text = matches?.firstOrNull() ?: "Didn't understand"
+                val text = matches?.firstOrNull() ?: return
+
+                resultText.text = text
+                processCommand(text)
             }
 
             override fun onError(error: Int) {
@@ -91,8 +102,34 @@ class MainActivity : Activity() {
         speechRecognizer.startListening(intent)
     }
 
+    private fun processCommand(text: String) {
+        when {
+            text.contains("hello") -> {
+                speak("Hello! How can I help?")
+            }
+
+            text.contains("your name") -> {
+                speak("My name is Zion.")
+            }
+
+            else -> {
+                speak("I don't understand that yet.")
+            }
+        }
+    }
+
+    private fun speak(text: String) {
+        textToSpeech.speak(
+            text,
+            TextToSpeech.QUEUE_FLUSH,
+            null,
+            "zion"
+        )
+    }
+    
     override fun onDestroy() {
         speechRecognizer.destroy()
+        textToSpeech.shutdown()
         super.onDestroy()
     }
 }
