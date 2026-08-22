@@ -13,7 +13,10 @@ import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 
+
 class MainActivity : Activity() {
+
+    private val installedApps = mutableMapOf<String, String>()
 
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var textToSpeech: TextToSpeech
@@ -63,6 +66,8 @@ class MainActivity : Activity() {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         
+        loadInstalledApps()
+
         requestMicrophonePermission()
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
 
@@ -73,8 +78,8 @@ class MainActivity : Activity() {
                 val text = matches?.firstOrNull() ?: return
                 resultText.text = text
 
-                val command = parseCommand(text)
-                executeCommand(command)
+                val commandData = parseCommand(text)
+                executeCommand(commandData)
             }
 
             override fun onError(error: Int) {
@@ -91,6 +96,21 @@ class MainActivity : Activity() {
         })
     }
 
+    private fun loadInstalledApps() {
+        installedApps.clear()
+
+        val apps = packageManager.getInstalledApplications(0)
+
+        for (app in apps) {
+            val appName = packageManager
+                .getApplicationLabel(app)
+                .toString()
+                .lowercase()
+
+            installedApps[appName] = app.packageName
+        }
+    }
+
     private fun startListening() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
@@ -103,16 +123,18 @@ class MainActivity : Activity() {
         speechRecognizer.startListening(intent)
     }
 
-    private fun parseCommand(text: String): CommandIntent {
-        return when {
+    private fun parseCommand(text: String): Command {
+        val intent = when {
             text.contains("hello") -> CommandIntent.GREETING
             text.contains("your name") -> CommandIntent.GET_NAME
+            text.startsWith("open ") -> CommandIntent.OPEN_APP
             else -> CommandIntent.UNKNOWN
         }
+        return Command(intent, text)
     }
 
-    private fun executeCommand(command: CommandIntent) {
-        when (command) {
+    private fun executeCommand(commandData: Command) {
+        when (commandData.intent) {
             CommandIntent.GREETING -> {
                 speak("Hello! How can I help?")
             }
@@ -121,8 +143,42 @@ class MainActivity : Activity() {
                 speak("My name is Zion.")
             }
 
+            CommandIntent.OPEN_APP -> {
+                openApp(commandData.text)
+            }
+
             CommandIntent.UNKNOWN -> {
                 speak("I don't understand that yet.")
+            }
+        }
+    }
+
+    private fun openApp(text: String) {
+        //val appName = text.removePrefix("open ").trim()
+
+        when {
+            text.contains("youtube") -> {
+                val intent = packageManager.getLaunchIntentForPackage("com.google.android.youtube")
+
+                if (intent != null) {
+                    startActivity(intent)
+                } else {
+                    speak("YouTube is not installed.")
+                }
+            }
+
+            text.contains("whatsapp") -> {
+                val intent = packageManager.getLaunchIntentForPackage("com.whatsapp")
+
+                if (intent != null) {
+                    startActivity(intent)
+                } else {
+                    speak("WhatsApp is not installed.")
+                }
+            }
+
+            else -> {
+                speak("I don't know that app.")
             }
         }
     }
