@@ -12,31 +12,45 @@
 11-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:1-67
 11-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:18-64
 12
-13    <application
-13-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:5:5-20:19
-14        android:debuggable="true"
-15        android:extractNativeLibs="false"
-16        android:label="Zion"
-16-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:9-29
-17        android:theme="@style/AppTheme" >
-17-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:6:9-40
-18        <activity
-18-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:9:9-18:20
-19            android:name="com.zion.mobile.MainActivity"
-19-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:13-41
-20            android:exported="true" >
-20-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:13-36
-21            <intent-filter>
-21-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:13-16:29
-22                <action android:name="android.intent.action.MAIN" />
-22-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:17-69
-22-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:25-66
-23
-24                <category android:name="android.intent.category.LAUNCHER" />
-24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:17-77
-24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:27-74
-25            </intent-filter>
-26        </activity>
-27    </application>
-28
-29</manifest>
+13    <queries>
+13-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:5:5-10:15
+14        <intent>
+14-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:6:9-9:18
+15            <action android:name="android.intent.action.MAIN" />
+15-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:13-65
+15-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:21-62
+16
+17            <category android:name="android.intent.category.LAUNCHER" />
+17-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:13-73
+17-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:23-70
+18        </intent>
+19    </queries>
+20
+21    <application
+21-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:12:5-27:19
+22        android:debuggable="true"
+23        android:extractNativeLibs="false"
+24        android:label="Zion"
+24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:9-29
+25        android:theme="@style/AppTheme" >
+25-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:9-40
+26        <activity
+26-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:16:9-25:20
+27            android:name="com.zion.mobile.MainActivity"
+27-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:17:13-41
+28            android:exported="true" >
+28-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:18:13-36
+29            <intent-filter>
+29-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:20:13-23:29
+30                <action android:name="android.intent.action.MAIN" />
+30-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:13-65
+30-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:21-62
+31
+32                <category android:name="android.intent.category.LAUNCHER" />
+32-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:13-73
+32-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:23-70
+33            </intent-filter>
+34        </activity>
+35    </application>
+36
+37</manifest>

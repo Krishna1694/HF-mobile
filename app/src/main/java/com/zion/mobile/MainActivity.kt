@@ -127,7 +127,8 @@ class MainActivity : Activity() {
         val intent = when {
             text.contains("hello") -> CommandIntent.GREETING
             text.contains("your name") -> CommandIntent.GET_NAME
-            text.startsWith("open ") -> CommandIntent.OPEN_APP
+            text.contains("refresh apps") -> CommandIntent.REFRESH_APPS
+            text.contains("open ") -> CommandIntent.OPEN_APP
             else -> CommandIntent.UNKNOWN
         }
         return Command(intent, text)
@@ -147,6 +148,11 @@ class MainActivity : Activity() {
                 openApp(commandData.text)
             }
 
+            CommandIntent.REFRESH_APPS -> {
+                loadInstalledApps()
+                speak("Apps refreshed.")
+            }
+
             CommandIntent.UNKNOWN -> {
                 speak("I don't understand that yet.")
             }
@@ -154,33 +160,18 @@ class MainActivity : Activity() {
     }
 
     private fun openApp(text: String) {
-        //val appName = text.removePrefix("open ").trim()
-
-        when {
-            text.contains("youtube") -> {
-                val intent = packageManager.getLaunchIntentForPackage("com.google.android.youtube")
+        for ((appName, packageName) in installedApps) {
+            if (text.lowercase().contains(appName)) {
+                val intent = packageManager.getLaunchIntentForPackage(packageName)
 
                 if (intent != null) {
                     startActivity(intent)
-                } else {
-                    speak("YouTube is not installed.")
+                    return
                 }
-            }
-
-            text.contains("whatsapp") -> {
-                val intent = packageManager.getLaunchIntentForPackage("com.whatsapp")
-
-                if (intent != null) {
-                    startActivity(intent)
-                } else {
-                    speak("WhatsApp is not installed.")
-                }
-            }
-
-            else -> {
-                speak("I don't know that app.")
             }
         }
+
+        speak("I couldn't find that app.")
     }
 
     private fun speak(text: String) {
