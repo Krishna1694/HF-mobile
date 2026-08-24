@@ -23,12 +23,24 @@ class MainActivity : Activity() {
     private lateinit var resultText: TextView
 
 
-    private fun requestMicrophonePermission() {
+    private fun requestPermissions() {
+        val permissions = mutableListOf<String>()
+
         if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
             != PackageManager.PERMISSION_GRANTED
         ) {
+            permissions.add(Manifest.permission.RECORD_AUDIO)
+        }
+
+        if (checkSelfPermission(Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.READ_CONTACTS)
+        }
+
+        if (permissions.isNotEmpty()) {
             requestPermissions(
-                arrayOf(Manifest.permission.RECORD_AUDIO),
+                permissions.toTypedArray(),
                 100
             )
         }
@@ -68,7 +80,7 @@ class MainActivity : Activity() {
         
         loadInstalledApps()
 
-        requestMicrophonePermission()
+        requestPermissions()
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
 
             override fun onResults(results: Bundle?) {
@@ -124,14 +136,42 @@ class MainActivity : Activity() {
     }
 
     private fun parseCommand(text: String): Command {
-        val intent = when {
-            text.contains("hello") -> CommandIntent.GREETING
-            text.contains("your name") -> CommandIntent.GET_NAME
-            text.contains("refresh apps") -> CommandIntent.REFRESH_APPS
-            text.contains("open ") -> CommandIntent.OPEN_APP
-            else -> CommandIntent.UNKNOWN
+        val input = text.lowercase().trim()
+
+        return when {
+            input.contains("hello") -> Command(CommandIntent.GREETING)
+
+            input.contains("your name") -> Command(CommandIntent.GET_NAME)
+
+            input.contains("refresh apps") -> Command(CommandIntent.REFRESH_APPS)
+
+            input.contains("open ") ||
+            input.contains("start ") ||
+            input.contains("launch ") -> {
+                var target: String? = null
+
+                for ((appName, _) in installedApps) {
+                    if (input.contains(appName)) {
+                        target = appName
+                        break
+                    }
+                }
+                Command(CommandIntent.OPEN_APP, target)
+            }
+            
+            input.contains("call ") ||
+            input.contains("dial ") -> {
+                val target = input
+                    .replaceFirst("call ", "")
+                    .replaceFirst("dial ", "")
+                    .trim()
+
+                Command(CommandIntent.CALL, target)
+            }
+
+            else ->
+                Command(CommandIntent.UNKNOWN)
         }
-        return Command(intent, text)
     }
 
     private fun executeCommand(commandData: Command) {
@@ -145,12 +185,16 @@ class MainActivity : Activity() {
             }
 
             CommandIntent.OPEN_APP -> {
-                openApp(commandData.text)
+                openApp(commandData.target)
             }
 
             CommandIntent.REFRESH_APPS -> {
                 loadInstalledApps()
                 speak("Apps refreshed.")
+            }
+
+            CommandIntent.CALL -> {
+                callContact(commandData.target)
             }
 
             CommandIntent.UNKNOWN -> {
@@ -159,15 +203,20 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun openApp(text: String) {
-        for ((appName, packageName) in installedApps) {
-            if (text.lowercase().contains(appName)) {
-                val intent = packageManager.getLaunchIntentForPackage(packageName)
+    private fun openApp(target: String?) {
+        if (target == null) {
+            speak("I couldn't find that app.")
+            return
+        }
 
-                if (intent != null) {
-                    startActivity(intent)
-                    return
-                }
+        val packageName = installedApps[target]
+
+        if (packageName != null) {
+            val intent = packageManager.getLaunchIntentForPackage(packageName)
+
+            if (intent != null) {
+                startActivity(intent)
+                return
             }
         }
 

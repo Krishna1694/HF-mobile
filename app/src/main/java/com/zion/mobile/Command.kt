@@ -2,5 +2,6 @@ package com.zion.mobile
 
 data class Command(
     val intent: CommandIntent,
-    val text: String
+    val target: String? = null,
+    val parameters: Map<String, String> = emptyMap()
 )
