@@ -22,6 +22,7 @@ class MainActivity : Activity() {
     private lateinit var speechRecognizer: SpeechRecognizer
     private lateinit var textToSpeech: TextToSpeech
     private lateinit var resultText: TextView
+    private var speechCallback: ((String) -> Unit)? = null
     
     private var pendingContacts: Map<String, List<ContactMatch>> = emptyMap()
     private var waitingForContactChoice = false
@@ -60,7 +61,10 @@ class MainActivity : Activity() {
         val button = Button(this).apply {
             text = "🎤 Speak"
             setOnClickListener {
-                startListening()
+                listenForSpeech { text ->
+                    val commandData = parseCommand(text)
+                    executeCommand(commandData)
+                }
             }
         }
 
@@ -93,8 +97,8 @@ class MainActivity : Activity() {
                 val text = matches?.firstOrNull() ?: return
                 resultText.text = text
 
-                val commandData = parseCommand(text)
-                executeCommand(commandData)
+                speechCallback?.invoke(text)
+                speechCallback = null
             }
 
             override fun onError(error: Int) {
@@ -126,7 +130,9 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun startListening() {
+    private fun listenForSpeech(callback: (String) -> Unit) {
+        speechCallback = callback
+
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -226,7 +232,21 @@ class MainActivity : Activity() {
         speak("I couldn't find that app.")
     }
 
-    private fun speak(text: String) {
+    private fun speak(text: String, onDone: (() -> Unit)? = null) {
+        textToSpeech.setOnUtteranceProgressListener(
+            object : android.speech.tts.UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {}
+
+                override fun onDone(utteranceId: String?) {
+                    runOnUiThread {
+                        onDone?.invoke()
+                    }
+                }
+
+                override fun onError(utteranceId: String?) {}
+            }
+        )
+
         textToSpeech.speak(
             text,
             TextToSpeech.QUEUE_FLUSH,
@@ -295,7 +315,11 @@ class MainActivity : Activity() {
             val names = contacts.keys.joinToString(", ")
             waitingForContactChoice = true
 
-            speak("I found multiple contacts: $names. Which one would you like to call?")
+            speak("I found multiple contacts: $names. Which one would you like to call?"){
+                listenForSpeech { text ->
+                    handleContactChoice(text)
+                }
+            }
             return
         }
 

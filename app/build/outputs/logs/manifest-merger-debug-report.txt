@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-29:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-29:12
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-30:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-30:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-30:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-30:12
 	package
 		INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml
 	android:versionName
@@ -16,35 +16,39 @@ uses-permission#android.permission.RECORD_AUDIO
 ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:1-67
 	android:name
 		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:3:18-64
+uses-permission#android.permission.READ_CONTACTS
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:4:1-68
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:4:18-65
 queries
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:5:5-10:15
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:6:5-11:15
 intent#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:6:9-9:18
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:9-10:18
 action#android.intent.action.MAIN
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:13-65
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:13-65
 	android:name
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:7:21-62
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:21-62
 category#android.intent.category.LAUNCHER
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:13-73
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:9:13-73
 	android:name
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:8:23-70
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:9:23-70
 application
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:12:5-27:19
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:12:5-27:19
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:5-28:19
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:5-28:19
 	android:extractNativeLibs
 		INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml
 	android:label
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:9-29
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:9-29
 	android:theme
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:13:9-40
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:14:9-40
 activity#com.zion.mobile.MainActivity
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:16:9-25:20
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:17:9-26:20
 	android:exported
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:18:13-36
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:19:13-36
 	android:name
-		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:17:13-41
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:18:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:20:13-23:29
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:21:13-24:29
 uses-sdk
 INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml
