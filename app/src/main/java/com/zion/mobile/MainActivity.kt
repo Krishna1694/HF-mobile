@@ -24,8 +24,8 @@ class MainActivity : Activity() {
     private lateinit var resultText: TextView
     private var speechCallback: ((String) -> Unit)? = null
     
+    private val allContacts = mutableListOf<ContactMatch>()
     private var pendingContacts: Map<String, List<ContactMatch>> = emptyMap()
-    private var waitingForContactChoice = false
 
     private fun requestPermissions() {
         val permissions = mutableListOf<String>()
@@ -47,6 +47,8 @@ class MainActivity : Activity() {
                 permissions.toTypedArray(),
                 100
             )
+        } else {
+            loadContacts()
         }
     }
 
@@ -86,7 +88,7 @@ class MainActivity : Activity() {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         
         loadInstalledApps()
-
+        
         requestPermissions()
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
 
@@ -117,7 +119,9 @@ class MainActivity : Activity() {
 
     private fun normalizeText(text: String): String {
         return text.lowercase()
-            .replace(Regex("[^a-z0-9]"), "")
+            .replace(Regex("[^a-z0-9 ]"), "")
+            .replace(Regex("\\s+"), " ")
+            .trim()
     }
 
     private fun levenshteinDistance(a: String, b: String): Int {
@@ -278,9 +282,23 @@ class MainActivity : Activity() {
             "zion"
         )
     }
-    
-    private fun callContact(target: String?) {
-        val matches = mutableListOf<ContactMatch>()
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 100 &&
+            grantResults.contains(PackageManager.PERMISSION_GRANTED)
+        ) {
+            loadContacts()
+        }
+    }
+
+    private fun loadContacts() {
+        allContacts.clear()
 
         val cursor = contentResolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -288,8 +306,8 @@ class MainActivity : Activity() {
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER
             ),
-            "${ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME} LIKE ?",
-            arrayOf("%$target%"),
+            null,
+            null,
             null
         )
 
@@ -303,7 +321,7 @@ class MainActivity : Activity() {
             )
 
             while (it.moveToNext()) {
-                matches.add(
+                allContacts.add(
                     ContactMatch(
                         name = it.getString(nameIndex),
                         number = it.getString(numberIndex)
@@ -311,7 +329,49 @@ class MainActivity : Activity() {
                 )
             }
         }
-        val contacts = matches
+    }
+    
+    private fun callContact(target: String?) {
+        val matches = allContacts
+
+        val normalizedTarget = normalizeText(target ?: "")
+
+        val exactMatches = matches.filter {
+            normalizeText(it.name) == normalizedTarget
+        }
+
+        val filteredMatches = if (exactMatches.isNotEmpty()) {
+            exactMatches
+        } else {
+            val partialMatches = matches.filter {
+                normalizeText(it.name).contains(normalizedTarget)
+            }
+
+            if (partialMatches.isNotEmpty()) {
+                partialMatches
+            } else {
+                matches.filter { contact ->
+                    val contactWords = contact.name
+                        .lowercase()
+                        .trim()
+                        .split(Regex("\\s+"))
+
+                    val targetWords = target
+                        ?.lowercase()
+                        ?.trim()
+                        ?.split(Regex("\\s+"))
+                        ?: emptyList()
+
+                    targetWords.all { targetWord ->
+                        contactWords.any { contactWord ->
+                            levenshteinDistance(targetWord, contactWord) <= 2
+                        }
+                    }
+                }
+            }
+        }
+
+        val contacts = filteredMatches
             .distinctBy { "${it.name}|${normalizePhoneNumber(it.number)}" }
             .groupBy { it.name }
         pendingContacts = contacts
@@ -342,7 +402,6 @@ class MainActivity : Activity() {
         }
         if (contacts.size > 1) {
             val names = contacts.keys.joinToString(", ")
-            waitingForContactChoice = true
 
             speak("Found multiple contacts: $names. Whom to call?"){
                 listenForSpeech { text ->
@@ -403,7 +462,6 @@ class MainActivity : Activity() {
                 }
             }
 
-            waitingForContactChoice = false
             return
         }
 
