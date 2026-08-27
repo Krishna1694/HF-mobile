@@ -47,6 +47,12 @@ class MainActivity : Activity() {
         ) {
             permissions.add(Manifest.permission.READ_CALL_LOG)
         }
+        
+        if (checkSelfPermission(Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.CALL_PHONE)
+        }
 
         if (permissions.isNotEmpty()) {
             requestPermissions(
@@ -392,12 +398,18 @@ class MainActivity : Activity() {
             speak("I couldn't find a recent call for that name.")
             return
         }
-
+        val selected = contacts.first {
+            it.number == latestNumber && it.name == latestName
+        }
         speak(
             "I found $latestName ending with ${
                 speakableDigits(latestNumber!!)
             }. Would you like me to call?"
-        )
+        ){
+        listenForSpeech { text ->
+            placeCall(text, selected)
+        }
+        }
     }
 
     private fun callContact(target: String?, recent: Boolean = false) {
@@ -462,7 +474,11 @@ class MainActivity : Activity() {
             if (contact.size == 1) {
                 val number = contact.first().number
 
-                speak("I found $name. Would you like me to call?")
+                speak("I found $name. Would you like me to call?"){
+                    listenForSpeech { text ->
+                        placeCall(text, contact.first())
+                    }
+                }
                 return
             }
             val endings = contact.joinToString(", ") {
@@ -524,7 +540,11 @@ class MainActivity : Activity() {
             val name = matches.keys.first()
 
             if (contact.size == 1) {
-                speak("I found $name. Would you like me to call?")
+                speak("I found $name. Would you like me to call?"){
+                    listenForSpeech { text ->
+                        placeCall(text, contact.first())
+                    }
+                }
             } else {
                 val endings = contact.joinToString(", ") {
                     speakableDigits(it.number)
@@ -575,9 +595,9 @@ class MainActivity : Activity() {
         if (index >= 0 && index < contact.size) {
             val selected = contact[index]
 
-            speak("Calling the number ending in ${speakableDigits(selected.number)}.")
-
-            // We'll actually place the call here next.
+            speak("Calling the number ending in ${speakableDigits(selected.number)}."){
+                placeCall("yes", selected)
+            }
             return
         }
 
@@ -594,9 +614,9 @@ class MainActivity : Activity() {
         if (matches.size == 1) {
             val selected = matches.first()
 
-            speak("Calling the number ending in ${speakableDigits(selected.number)}.")
-
-            // We'll actually place the call here next.
+            speak("Calling the number ending in ${speakableDigits(selected.number)}."){
+                placeCall("yes", selected)
+            }
             return
         }
 
@@ -612,16 +632,25 @@ class MainActivity : Activity() {
         val input = normalizeText(confirmation)
 
         when {
-            input == "yes" ||
-            input == "yeah" ||
-            input == "yep" -> {
-                speak("Calling ${contact.name}.")
-                // Actual dialing will go here
+            input.contains("yes") ||
+            input.contains("yeah") ||
+            input.contains("yep") -> {
+                //speak("Calling ${contact.name}.")
+                val intent = Intent(
+                    Intent.ACTION_CALL,
+                    android.net.Uri.parse("tel:${contact.number}")
+                )
+
+                if (checkSelfPermission(Manifest.permission.CALL_PHONE)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
+                    startActivity(intent)
+                }
             }
 
-            input == "no" ||
-            input == "cancel" -> {
-                speak("Okay, cancelled.")
+            input.contains("no") ||
+            input.contains("cancel") -> {
+                speak("Okay, call cancelled.")
             }
 
             else -> {
