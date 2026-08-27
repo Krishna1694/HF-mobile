@@ -115,6 +115,30 @@ class MainActivity : Activity() {
         })
     }
 
+    private fun normalizeText(text: String): String {
+        return text.lowercase()
+            .replace(Regex("[^a-z0-9]"), "")
+    }
+
+    private fun levenshteinDistance(a: String, b: String): Int {
+        val dp = Array(a.length + 1) { IntArray(b.length + 1) }
+
+        for (i in 0..a.length) dp[i][0] = i
+        for (j in 0..b.length) dp[0][j] = j
+
+        for (i in 1..a.length) {
+            for (j in 1..b.length) {
+                dp[i][j] = minOf(
+                    dp[i - 1][j] + 1,
+                    dp[i][j - 1] + 1,
+                    dp[i - 1][j - 1] + if (a[i - 1] == b[j - 1]) 0 else 1
+                )
+            }
+        }
+
+        return dp[a.length][b.length]
+    }
+
     private fun loadInstalledApps() {
         installedApps.clear()
 
@@ -287,7 +311,9 @@ class MainActivity : Activity() {
                 )
             }
         }
-        val contacts = matches.groupBy { it.name }
+        val contacts = matches
+            .distinctBy { "${it.name}|${normalizePhoneNumber(it.number)}" }
+            .groupBy { it.name }
         pendingContacts = contacts
         if (contacts.isEmpty()) {
             speak("I couldn't find that contact.")
@@ -305,17 +331,20 @@ class MainActivity : Activity() {
                 return
             }
             val endings = contact.joinToString(", ") {
-                it.number.takeLast(3)
+                speakableDigits(it.number)
             }
-
-            speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?")
+            speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
+                listenForSpeech { text ->
+                    handleNumberChoice(text)
+                }
+            }
             return
         }
         if (contacts.size > 1) {
             val names = contacts.keys.joinToString(", ")
             waitingForContactChoice = true
 
-            speak("I found multiple contacts: $names. Which one would you like to call?"){
+            speak("Found multiple contacts: $names. Whom to call?"){
                 listenForSpeech { text ->
                     handleContactChoice(text)
                 }
@@ -325,35 +354,126 @@ class MainActivity : Activity() {
 
     }
 
-    private fun handleContactChoice(input: String) {
-        val normalized = input.lowercase().trim()
+    private fun speakableDigits(number: String): String {
+        return number.takeLast(3).map { it.toString() }.joinToString(" ")
+    }
 
-        val selected = pendingContacts.keys.firstOrNull {
-            it.lowercase() == normalized
+    private fun normalizePhoneNumber(number: String): String {
+        return number.filter { it.isDigit() }
+    }
+
+    private fun handleContactChoice(input: String) {
+        val normalized = normalizeText(input)
+
+        val exactMatches = pendingContacts.filterKeys {
+            normalizeText(it) == normalized
         }
 
-        if (selected != null) {
-            val contact = pendingContacts[selected]!!
+        val matches = if (exactMatches.isNotEmpty()) {
+            exactMatches
+        } else {
+            val partialMatches = pendingContacts.filterKeys {
+                normalizeText(it).contains(normalized)
+            }
+
+            if (partialMatches.isNotEmpty()) {
+                partialMatches
+            } else {
+                pendingContacts.filterKeys {
+                    levenshteinDistance(normalizeText(it), normalized) <= 2
+                }
+            }
+        }
+
+        if (matches.size == 1) {
+            val contact = matches.values.first()
+            val name = matches.keys.first()
 
             if (contact.size == 1) {
-                speak("I found $selected. Would you like me to call?")
+                speak("I found $name. Would you like me to call?")
             } else {
                 val endings = contact.joinToString(", ") {
-                    it.number.takeLast(3)
+                    speakableDigits(it.number)
                 }
 
-                speak(
-                    "There are ${contact.size} numbers for $selected ending with $endings. " +
-                    "Which one would you like to call?"
-                )
+                speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
+                    listenForSpeech { text ->
+                        handleNumberChoice(text)
+                    }
+                }
             }
 
             waitingForContactChoice = false
             return
         }
 
-        speak("I couldn't find that contact. Please try again.")
-    }    
+        if (matches.size > 1) {
+            val names = matches.keys.joinToString(", ")
+
+            speak("Found multiple contacts: $names. Whom to call?") {
+                listenForSpeech { text ->
+                    handleContactChoice(text)
+                }
+            }
+
+            return
+        }
+
+        speak("Couldn't find that contact. Please try again.")
+    }
+
+    private fun handleNumberChoice(input: String) {
+        val normalized = normalizeText(input)
+
+        val contact = pendingContacts.values.firstOrNull()
+
+        if (contact == null) {
+            speak("I couldn't find those numbers.")
+            return
+        }
+
+        val index = when {
+            normalized == "first" || normalized == "one" || normalized == "1" -> 0
+            normalized == "second" || normalized == "two" || normalized == "2" -> 1
+            normalized == "third" || normalized == "three" || normalized == "3" -> 2
+            else -> -1
+        }
+
+        if (index >= 0 && index < contact.size) {
+            val selected = contact[index]
+
+            speak("Calling the number ending in ${speakableDigits(selected.number)}.")
+
+            // We'll actually place the call here next.
+            return
+        }
+
+        // Check the last digits
+        val digits = normalized
+            .split(" ")
+            .filter { it.all { char -> char.isDigit() } }
+            .joinToString("")
+
+        val matches = contact.filter {
+            normalizePhoneNumber(it.number).endsWith(digits)
+        }
+
+        if (matches.size == 1) {
+            val selected = matches.first()
+
+            speak("Calling the number ending in ${speakableDigits(selected.number)}.")
+
+            // We'll actually place the call here next.
+            return
+        }
+
+        if (matches.size > 1) {
+            speak("Found more than one number matching that. Please try again.")
+            return
+        }
+
+        speak("I couldn't identify that number. Please try again.")
+    }
 
     override fun onDestroy() {
         speechRecognizer.destroy()
