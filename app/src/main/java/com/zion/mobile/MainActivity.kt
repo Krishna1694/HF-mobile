@@ -13,7 +13,7 @@ import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
-
+import android.provider.CallLog
 
 class MainActivity : Activity() {
 
@@ -40,6 +40,12 @@ class MainActivity : Activity() {
             != PackageManager.PERMISSION_GRANTED
         ) {
             permissions.add(Manifest.permission.READ_CONTACTS)
+        }
+
+        if (checkSelfPermission(Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.READ_CALL_LOG)
         }
 
         if (permissions.isNotEmpty()) {
@@ -198,12 +204,23 @@ class MainActivity : Activity() {
             
             input.contains("call ") ||
             input.contains("dial ") -> {
-                val target = input
+                var recent = false
+
+                var target = input
                     .replaceFirst("call ", "")
                     .replaceFirst("dial ", "")
                     .trim()
 
-                Command(CommandIntent.CALL, target)
+                if (target.contains("recent")) {
+                    target = target
+                        .replace("recently", "")
+                        .replace("recent", "")
+                        .trim()
+
+                    recent = true
+                }
+
+                Command(CommandIntent.CALL, target, recent)
             }
 
             else ->
@@ -231,7 +248,7 @@ class MainActivity : Activity() {
             }
 
             CommandIntent.CALL -> {
-                callContact(commandData.target)
+                callContact(commandData.target, commandData.recent)
             }
 
             CommandIntent.UNKNOWN -> {
@@ -291,7 +308,8 @@ class MainActivity : Activity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == 100 &&
-            grantResults.contains(PackageManager.PERMISSION_GRANTED)
+            checkSelfPermission(Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED
         ) {
             loadContacts()
         }
@@ -331,7 +349,58 @@ class MainActivity : Activity() {
         }
     }
     
-    private fun callContact(target: String?) {
+    private fun recentCalls(contacts: List<ContactMatch>) {
+        if (contacts.isEmpty()) {
+            speak("I couldn't find any recent call for that contact.")
+            return
+        }
+
+        var latestNumber: String? = null
+        var latestName: String? = null
+
+        val cursor = contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            arrayOf(
+                CallLog.Calls.NUMBER,
+                CallLog.Calls.DATE
+            ),
+            null,
+            null,
+            "${CallLog.Calls.DATE} DESC"
+        )
+
+        cursor?.use {
+            val numberIndex = it.getColumnIndexOrThrow(CallLog.Calls.NUMBER)
+
+            while (it.moveToNext()) {
+                val callNumber = it.getString(numberIndex)
+
+                val contact = contacts.firstOrNull {
+                    normalizePhoneNumber(it.number).takeLast(10) ==
+                        normalizePhoneNumber(callNumber).takeLast(10)
+                }
+
+                if (contact != null) {
+                    latestNumber = contact.number
+                    latestName = contact.name
+                    break
+                }
+            }
+        }
+
+        if (latestNumber == null) {
+            speak("I couldn't find a recent call for that name.")
+            return
+        }
+
+        speak(
+            "I found $latestName ending with ${
+                speakableDigits(latestNumber!!)
+            }. Would you like me to call?"
+        )
+    }
+
+    private fun callContact(target: String?, recent: Boolean = false) {
         val matches = allContacts
 
         val normalizedTarget = normalizeText(target ?: "")
@@ -374,9 +443,15 @@ class MainActivity : Activity() {
         val contacts = filteredMatches
             .distinctBy { "${it.name}|${normalizePhoneNumber(it.number)}" }
             .groupBy { it.name }
+
         pendingContacts = contacts
         if (contacts.isEmpty()) {
             speak("I couldn't find that contact.")
+            return
+        }
+
+        if (recent) {
+            recentCalls(contacts.values.flatten())
             return
         }
 
@@ -531,6 +606,28 @@ class MainActivity : Activity() {
         }
 
         speak("I couldn't identify that number. Please try again.")
+    }
+
+    private fun placeCall(confirmation: String, contact: ContactMatch) {
+        val input = normalizeText(confirmation)
+
+        when {
+            input == "yes" ||
+            input == "yeah" ||
+            input == "yep" -> {
+                speak("Calling ${contact.name}.")
+                // Actual dialing will go here
+            }
+
+            input == "no" ||
+            input == "cancel" -> {
+                speak("Okay, cancelled.")
+            }
+
+            else -> {
+                speak("Please say yes or no.")
+            }
+        }
     }
 
     override fun onDestroy() {
