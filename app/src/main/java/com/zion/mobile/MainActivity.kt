@@ -7,10 +7,6 @@ import android.content.Intent
 import android.widget.Button
 import android.widget.TextView
 import android.widget.LinearLayout
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
-import android.speech.tts.TextToSpeech
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import android.provider.CallLog
@@ -19,10 +15,8 @@ class MainActivity : Activity() {
 
     private val installedApps = mutableMapOf<String, String>()
 
-    private lateinit var speechRecognizer: SpeechRecognizer
-    private lateinit var textToSpeech: TextToSpeech
+    private lateinit var speechManager: SpeechManager
     private lateinit var resultText: TextView
-    private var speechCallback: ((String) -> Unit)? = null
     
     private val allContacts = mutableListOf<ContactMatch>()
     private var pendingContacts: Map<String, List<ContactMatch>> = emptyMap()
@@ -67,6 +61,9 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        speechManager = SpeechManager(this)
+        speechManager.initialize()
+        
         resultText = TextView(this).apply {
             text = "Tap the button and speak"
             textSize = 24f
@@ -75,16 +72,10 @@ class MainActivity : Activity() {
         val button = Button(this).apply {
             text = "🎤 Speak"
             setOnClickListener {
-                listenForSpeech { text ->
+                speechManager.listen { text ->
                     val commandData = parseCommand(text)
                     executeCommand(commandData)
                 }
-            }
-        }
-
-        textToSpeech = TextToSpeech(this) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                speak("I'm UP")
             }
         }
 
@@ -96,37 +87,10 @@ class MainActivity : Activity() {
         }
 
         setContentView(layout)
-
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
         
         loadInstalledApps()
         
         requestPermissions()
-        speechRecognizer.setRecognitionListener(object : RecognitionListener {
-
-            override fun onResults(results: Bundle?) {
-                val matches =
-                    results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-
-                val text = matches?.firstOrNull() ?: return
-                resultText.text = text
-
-                speechCallback?.invoke(text)
-                speechCallback = null
-            }
-
-            override fun onError(error: Int) {
-                resultText.text = "Error: $error"
-            }
-
-            override fun onReadyForSpeech(params: Bundle?) {}
-            override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
-            override fun onBufferReceived(buffer: ByteArray?) {}
-            override fun onEndOfSpeech() {}
-            override fun onPartialResults(partialResults: Bundle?) {}
-            override fun onEvent(eventType: Int, params: Bundle?) {}
-        })
     }
 
     private fun normalizeText(text: String): String {
@@ -168,20 +132,6 @@ class MainActivity : Activity() {
 
             installedApps[appName] = app.packageName
         }
-    }
-
-    private fun listenForSpeech(callback: (String) -> Unit) {
-        speechCallback = callback
-
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-            )
-        }
-
-        resultText.text = "🎙 Listening..."
-        speechRecognizer.startListening(intent)
     }
 
     private fun parseCommand(text: String): Command {
@@ -237,11 +187,11 @@ class MainActivity : Activity() {
     private fun executeCommand(commandData: Command) {
         when (commandData.intent) {
             CommandIntent.GREETING -> {
-                speak("Hello! How can I help?")
+                speechManager.speak("Hello! How can I help?")
             }
 
             CommandIntent.GET_NAME -> {
-                speak("My name is Zion.")
+                speechManager.speak("My name is Zion.")
             }
 
             CommandIntent.OPEN_APP -> {
@@ -250,7 +200,7 @@ class MainActivity : Activity() {
 
             CommandIntent.REFRESH_APPS -> {
                 loadInstalledApps()
-                speak("Apps refreshed.")
+                speechManager.speak("Apps refreshed.")
             }
 
             CommandIntent.CALL -> {
@@ -258,14 +208,14 @@ class MainActivity : Activity() {
             }
 
             CommandIntent.UNKNOWN -> {
-                speak("I don't understand that yet.")
+                speechManager.speak("I don't understand that yet.")
             }
         }
     }
 
     private fun openApp(target: String?) {
         if (target == null) {
-            speak("I couldn't find that app.")
+            speechManager.speak("I couldn't find that app.")
             return
         }
 
@@ -280,31 +230,10 @@ class MainActivity : Activity() {
             }
         }
 
-        speak("I couldn't find that app.")
+        speechManager.speak("I couldn't find that app.")
     }
 
-    private fun speak(text: String, onDone: (() -> Unit)? = null) {
-        textToSpeech.setOnUtteranceProgressListener(
-            object : android.speech.tts.UtteranceProgressListener() {
-                override fun onStart(utteranceId: String?) {}
 
-                override fun onDone(utteranceId: String?) {
-                    runOnUiThread {
-                        onDone?.invoke()
-                    }
-                }
-
-                override fun onError(utteranceId: String?) {}
-            }
-        )
-
-        textToSpeech.speak(
-            text,
-            TextToSpeech.QUEUE_FLUSH,
-            null,
-            "zion"
-        )
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -357,7 +286,7 @@ class MainActivity : Activity() {
     
     private fun recentCalls(contacts: List<ContactMatch>) {
         if (contacts.isEmpty()) {
-            speak("I couldn't find any recent call for that contact.")
+            speechManager.speak("I couldn't find any recent call for that contact.")
             return
         }
 
@@ -395,18 +324,18 @@ class MainActivity : Activity() {
         }
 
         if (latestNumber == null) {
-            speak("I couldn't find a recent call for that name.")
+            speechManager.speak("I couldn't find a recent call for that name.")
             return
         }
         val selected = contacts.first {
             it.number == latestNumber && it.name == latestName
         }
-        speak(
+        speechManager.speak(
             "I found $latestName ending with ${
                 speakableDigits(latestNumber!!)
             }. Would you like me to call?"
         ){
-        listenForSpeech { text ->
+        speechManager.listen { text ->
             placeCall(text, selected)
         }
         }
@@ -458,7 +387,7 @@ class MainActivity : Activity() {
 
         pendingContacts = contacts
         if (contacts.isEmpty()) {
-            speak("I couldn't find that contact.")
+            speechManager.speak("I couldn't find that contact.")
             return
         }
 
@@ -472,10 +401,8 @@ class MainActivity : Activity() {
             val name = contact.first().name
 
             if (contact.size == 1) {
-                val number = contact.first().number
-
-                speak("I found $name. Would you like me to call?"){
-                    listenForSpeech { text ->
+                speechManager.speak("I found $name. Would you like me to call?"){
+                    speechManager.listen { text ->
                         placeCall(text, contact.first())
                     }
                 }
@@ -484,8 +411,8 @@ class MainActivity : Activity() {
             val endings = contact.joinToString(", ") {
                 speakableDigits(it.number)
             }
-            speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
-                listenForSpeech { text ->
+            speechManager.speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
+                speechManager.listen { text ->
                     handleNumberChoice(text)
                 }
             }
@@ -494,8 +421,8 @@ class MainActivity : Activity() {
         if (contacts.size > 1) {
             val names = contacts.keys.joinToString(", ")
 
-            speak("Found multiple contacts: $names. Whom to call?"){
-                listenForSpeech { text ->
+            speechManager.speak("Found multiple contacts: $names. Whom to call?"){
+                speechManager.listen { text ->
                     handleContactChoice(text)
                 }
             }
@@ -540,8 +467,8 @@ class MainActivity : Activity() {
             val name = matches.keys.first()
 
             if (contact.size == 1) {
-                speak("I found $name. Would you like me to call?"){
-                    listenForSpeech { text ->
+                speechManager.speak("I found $name. Would you like me to call?"){
+                    speechManager.listen { text ->
                         placeCall(text, contact.first())
                     }
                 }
@@ -550,8 +477,8 @@ class MainActivity : Activity() {
                     speakableDigits(it.number)
                 }
 
-                speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
-                    listenForSpeech { text ->
+                speechManager.speak("There are ${contact.size} numbers for $name ending with $endings. Which one would you like to call?") {
+                    speechManager.listen { text ->
                         handleNumberChoice(text)
                     }
                 }
@@ -563,8 +490,8 @@ class MainActivity : Activity() {
         if (matches.size > 1) {
             val names = matches.keys.joinToString(", ")
 
-            speak("Found multiple contacts: $names. Whom to call?") {
-                listenForSpeech { text ->
+            speechManager.speak("Found multiple contacts: $names. Whom to call?") {
+                speechManager.listen { text ->
                     handleContactChoice(text)
                 }
             }
@@ -572,7 +499,7 @@ class MainActivity : Activity() {
             return
         }
 
-        speak("Couldn't find that contact. Please try again.")
+        speechManager.speak("Couldn't find that contact. Please try again.")
     }
 
     private fun handleNumberChoice(input: String) {
@@ -581,7 +508,7 @@ class MainActivity : Activity() {
         val contact = pendingContacts.values.firstOrNull()
 
         if (contact == null) {
-            speak("I couldn't find those numbers.")
+            speechManager.speak("I couldn't find those numbers.")
             return
         }
 
@@ -595,7 +522,7 @@ class MainActivity : Activity() {
         if (index >= 0 && index < contact.size) {
             val selected = contact[index]
 
-            speak("Calling the number ending in ${speakableDigits(selected.number)}."){
+            speechManager.speak("Calling the number ending in ${speakableDigits(selected.number)}."){
                 placeCall("yes", selected)
             }
             return
@@ -614,18 +541,18 @@ class MainActivity : Activity() {
         if (matches.size == 1) {
             val selected = matches.first()
 
-            speak("Calling the number ending in ${speakableDigits(selected.number)}."){
+            speechManager.speak("Calling the number ending in ${speakableDigits(selected.number)}."){
                 placeCall("yes", selected)
             }
             return
         }
 
         if (matches.size > 1) {
-            speak("Found more than one number matching that. Please try again.")
+            speechManager.speak("Found more than one number matching that. Please try again.")
             return
         }
 
-        speak("I couldn't identify that number. Please try again.")
+        speechManager.speak("I couldn't identify that number. Please try again.")
     }
 
     private fun placeCall(confirmation: String, contact: ContactMatch) {
@@ -650,18 +577,17 @@ class MainActivity : Activity() {
 
             input.contains("no") ||
             input.contains("cancel") -> {
-                speak("Okay, call cancelled.")
+                speechManager.speak("Okay, call cancelled.")
             }
 
             else -> {
-                speak("Please say yes or no.")
+                speechManager.speak("Please say yes or no.")
             }
         }
     }
 
     override fun onDestroy() {
-        speechRecognizer.destroy()
-        textToSpeech.shutdown()
+        speechManager.shutdown()
         super.onDestroy()
     }
 }
