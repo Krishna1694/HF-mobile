@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.zion.mobile.app-debug-4:/xml_voice_interaction_service.xml.flat",
+        "source": "com.zion.mobile.app-main-6:/xml/voice_interaction_service.xml"
+    },
+    {
+        "merged": "/home/codespace/.gradle/daemon/9.4.0/com.zion.mobile.app-debug-4:/xml_voice_interaction_service.xml.flat",
+        "source": "/home/codespace/.gradle/daemon/9.4.0/com.zion.mobile.app-main-6:/xml/voice_interaction_service.xml"
+    }
+]

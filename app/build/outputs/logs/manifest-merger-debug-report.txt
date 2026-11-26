@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-32:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-32:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-32:12
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-32:12
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-68:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-68:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-68:12
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:2:1-68:12
 	package
 		INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml
 	android:versionName
@@ -41,8 +41,8 @@ ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:13-73
 	android:name
 		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:23-70
 application
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-30:19
-INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-30:19
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-65:19
+INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-65:19
 	android:extractNativeLibs
 		INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml
 	android:label
@@ -50,13 +50,65 @@ INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-30:19
 	android:theme
 		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:16:9-40
 activity#com.zion.mobile.MainActivity
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:19:9-28:20
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:19:9-39:20
+	android:launchMode
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:22:13-43
 	android:exported
 		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:21:13-36
 	android:name
 		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:20:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:23:13-26:29
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:24:13-27:29
+intent-filter#action:name:android.intent.action.ASSIST+category:name:android.intent.category.DEFAULT
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:29:13-32:29
+action#android.intent.action.ASSIST
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:30:17-71
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:30:25-68
+category#android.intent.category.DEFAULT
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:17-76
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:27-73
+intent-filter#action:name:android.intent.action.VOICE_COMMAND+category:name:android.intent.category.DEFAULT
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:34:13-37:29
+action#android.intent.action.VOICE_COMMAND
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:35:17-78
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:35:25-75
+service#com.zion.mobile.HFVoiceInteractionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:41:9-52:19
+	android:exported
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:43:13-36
+	android:permission
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:44:13-75
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:42:13-54
+intent-filter#action:name:android.service.voice.VoiceInteractionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:45:13-47:29
+action#android.service.voice.VoiceInteractionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:46:17-88
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:46:25-85
+meta-data#android.voice_interaction
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:49:13-51:69
+	android:resource
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:51:17-66
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:50:17-57
+service#com.zion.mobile.HFRecognitionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:54:9-63:19
+	android:exported
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:56:13-36
+	android:permission
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:57:13-84
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:55:13-49
+intent-filter#action:name:android.speech.RecognitionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:59:13-61:29
+action#android.speech.RecognitionService
+ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:60:17-76
+	android:name
+		ADDED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml:60:25-73
 uses-sdk
 INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /workspaces/HF-mobile/app/src/main/AndroidManifest.xml

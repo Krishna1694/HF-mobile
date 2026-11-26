@@ -1,15 +1,17 @@
 package com.zion.mobile
 
 import android.Manifest
-import android.app.Activity
 import android.os.Bundle
-import android.content.Intent
+import android.app.Activity
 import android.widget.Button
+import android.content.Intent
 import android.widget.TextView
+import android.provider.CallLog
 import android.widget.LinearLayout
+import android.app.role.RoleManager
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
-import android.provider.CallLog
+
 
 class MainActivity : Activity() {
 
@@ -84,6 +86,13 @@ class MainActivity : Activity() {
             setPadding(40, 100, 40, 40)
             addView(resultText)
             addView(button)
+        }
+
+        if (intent?.action == Intent.ACTION_VOICE_COMMAND) {
+            speechManager.listen { text ->
+                val commandData = parseCommand(text)
+                executeCommand(commandData)
+            }
         }
 
         setContentView(layout)
@@ -231,6 +240,19 @@ class MainActivity : Activity() {
         }
 
         speechManager.speak("I couldn't find that app.")
+    }
+
+
+
+    private fun requestAssistantRole() {
+        val roleManager = getSystemService(RoleManager::class.java)
+
+        if (roleManager.isRoleAvailable(RoleManager.ROLE_ASSISTANT) &&
+            !roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)
+        ) {
+            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT)
+            startActivityForResult(intent, 100)
+        }
     }
 
 

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.zion.mobile.app-debug-4:/values_values.arsc.flat",
+            "outputFile": "/home/codespace/.gradle/daemon/9.4.0/com.zion.mobile.app-debug-4:/values_values.arsc.flat",
             "map": [
                 {
                     "source": "/workspaces/HF-mobile/app/src/main/res/values/styles.xml",

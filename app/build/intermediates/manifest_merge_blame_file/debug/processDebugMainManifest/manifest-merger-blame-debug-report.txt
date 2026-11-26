@@ -36,7 +36,7 @@
 22    </queries>
 23
 24    <application
-24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-30:19
+24-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:15:5-65:19
 25        android:debuggable="true"
 26        android:extractNativeLibs="false"
 27        android:label="Zion"
@@ -44,22 +44,82 @@
 28        android:theme="@style/AppTheme" >
 28-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:16:9-40
 29        <activity
-29-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:19:9-28:20
+29-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:19:9-39:20
 30            android:name="com.zion.mobile.MainActivity"
 30-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:20:13-41
-31            android:exported="true" >
+31            android:exported="true"
 31-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:21:13-36
-32            <intent-filter>
-32-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:23:13-26:29
-33                <action android:name="android.intent.action.MAIN" />
-33-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:13-65
-33-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:21-62
-34
-35                <category android:name="android.intent.category.LAUNCHER" />
-35-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:13-73
-35-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:23-70
-36            </intent-filter>
-37        </activity>
-38    </application>
-39
-40</manifest>
+32            android:launchMode="singleTop" >
+32-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:22:13-43
+33            <intent-filter>
+33-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:24:13-27:29
+34                <action android:name="android.intent.action.MAIN" />
+34-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:13-65
+34-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:10:21-62
+35
+36                <category android:name="android.intent.category.LAUNCHER" />
+36-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:13-73
+36-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:11:23-70
+37            </intent-filter>
+38            <intent-filter>
+38-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:29:13-32:29
+39                <action android:name="android.intent.action.ASSIST" />
+39-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:30:17-71
+39-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:30:25-68
+40
+41                <category android:name="android.intent.category.DEFAULT" />
+41-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:17-76
+41-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:27-73
+42            </intent-filter>
+43            <intent-filter>
+43-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:34:13-37:29
+44                <action android:name="android.intent.action.VOICE_COMMAND" />
+44-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:35:17-78
+44-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:35:25-75
+45
+46                <category android:name="android.intent.category.DEFAULT" />
+46-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:17-76
+46-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:31:27-73
+47            </intent-filter>
+48        </activity>
+49
+50        <service
+50-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:41:9-52:19
+51            android:name="com.zion.mobile.HFVoiceInteractionService"
+51-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:42:13-54
+52            android:exported="true"
+52-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:43:13-36
+53            android:permission="android.permission.BIND_VOICE_INTERACTION" >
+53-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:44:13-75
+54            <intent-filter>
+54-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:45:13-47:29
+55                <action android:name="android.service.voice.VoiceInteractionService" />
+55-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:46:17-88
+55-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:46:25-85
+56            </intent-filter>
+57
+58            <meta-data
+58-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:49:13-51:69
+59                android:name="android.voice_interaction"
+59-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:50:17-57
+60                android:resource="@xml/voice_interaction_service" />
+60-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:51:17-66
+61        </service>
+62        <service
+62-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:54:9-63:19
+63            android:name="com.zion.mobile.HFRecognitionService"
+63-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:55:13-49
+64            android:exported="true"
+64-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:56:13-36
+65            android:permission="android.permission.BIND_SPEECH_RECOGNITION_SERVICE" >
+65-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:57:13-84
+66            <intent-filter>
+66-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:59:13-61:29
+67                <action android:name="android.speech.RecognitionService" />
+67-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:60:17-76
+67-->/workspaces/HF-mobile/app/src/main/AndroidManifest.xml:60:25-73
+68            </intent-filter>
+69        </service>
+70    </application>
+71
+72</manifest>
