@@ -88,13 +88,6 @@ class MainActivity : Activity() {
             addView(button)
         }
 
-        if (intent?.action == Intent.ACTION_VOICE_COMMAND) {
-            speechManager.listen { text ->
-                val commandData = parseCommand(text)
-                executeCommand(commandData)
-            }
-        }
-
         setContentView(layout)
         
         loadInstalledApps()
@@ -241,21 +234,6 @@ class MainActivity : Activity() {
 
         speechManager.speak("I couldn't find that app.")
     }
-
-
-
-    private fun requestAssistantRole() {
-        val roleManager = getSystemService(RoleManager::class.java)
-
-        if (roleManager.isRoleAvailable(RoleManager.ROLE_ASSISTANT) &&
-            !roleManager.isRoleHeld(RoleManager.ROLE_ASSISTANT)
-        ) {
-            val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_ASSISTANT)
-            startActivityForResult(intent, 100)
-        }
-    }
-
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

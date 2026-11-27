@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.zion.mobile.app-mergeDebugResources-2:/values/values.xml",
+            "outputFile": "/home/codespace/.gradle/daemon/9.4.0/com.zion.mobile.app-mergeDebugResources-2:/values/values.xml",
             "map": [
                 {
                     "source": "/workspaces/HF-mobile/app/src/main/res/values/styles.xml",
@@ -12,6 +12,30 @@
                         "endLines": "5",
                         "endColumns": "12",
                         "endOffsets": "255"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.zion.mobile.app-mergeDebugResources-2:/values/values.xml",
+            "map": [
+                {
+                    "source": "/workspaces/HF-mobile/app/src/main/res/values/styles.xml",
+                    "from": {
+                        "startLines": "-1,7",
+                        "startColumns": "-1,4",
+                        "startOffsets": "-1,261",
+                        "endLines": "-1,12",
+                        "endColumns": "-1,12",
+                        "endOffsets": "-1,632"
+                    },
+                    "to": {
+                        "startLines": "2,6",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,260",
+                        "endLines": "5,11",
+                        "endColumns": "12,12",
+                        "endOffsets": "255,631"
                     }
                 }
             ]

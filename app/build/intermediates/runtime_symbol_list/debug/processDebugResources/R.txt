@@ -1,2 +1,3 @@
 int style AppTheme 0x7f010000
+int style Theme_App_TransparentOverlay 0x7f010001
 int xml voice_interaction_service 0x7f020000

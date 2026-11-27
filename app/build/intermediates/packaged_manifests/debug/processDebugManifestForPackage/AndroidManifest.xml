@@ -35,6 +35,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.zion.mobile.AssistantOverlayActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.App.TransparentOverlay" >
             <intent-filter>
                 <action android:name="android.intent.action.ASSIST" />
 
@@ -60,11 +67,11 @@
                 android:resource="@xml/voice_interaction_service" />
         </service>
         <service
-            android:name="com.zion.mobile.HFRecognitionService"
+            android:name="com.zion.mobile.HFVoiceInteractionSessionService"
             android:exported="true"
-            android:permission="android.permission.BIND_SPEECH_RECOGNITION_SERVICE" >
+            android:permission="android.permission.BIND_VOICE_INTERACTION" >
             <intent-filter>
-                <action android:name="android.speech.RecognitionService" />
+                <action android:name="android.service.voice.VoiceInteractionSessionService" />
             </intent-filter>
         </service>
     </application>

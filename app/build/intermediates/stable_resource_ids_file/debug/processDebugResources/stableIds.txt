@@ -1,2 +1,3 @@
 com.zion.mobile:xml/voice_interaction_service = 0x7f020000
+com.zion.mobile:style/Theme.App.TransparentOverlay = 0x7f010001
 com.zion.mobile:style/AppTheme = 0x7f010000
