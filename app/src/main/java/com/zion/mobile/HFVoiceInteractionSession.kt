@@ -1,11 +1,12 @@
 package com.zion.mobile
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.graphics.Color
 import android.widget.TextView
+import android.widget.LinearLayout
+import com.zion.mobile.core.SpeechManager
 import android.service.voice.VoiceInteractionSession
 
 class HFVoiceInteractionSession(context: android.content.Context) :

@@ -27,7 +27,7 @@
         android:label="Zion"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.zion.mobile.MainActivity"
+            android:name="com.zion.mobile.main.MainActivity"
             android:exported="true"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -37,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.zion.mobile.AssistantOverlayActivity"
+            android:name="com.zion.mobile.overlay.OverlayActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:taskAffinity=""
@@ -70,9 +70,6 @@
             android:name="com.zion.mobile.HFVoiceInteractionSessionService"
             android:exported="true"
             android:permission="android.permission.BIND_VOICE_INTERACTION" >
-            <intent-filter>
-                <action android:name="android.service.voice.VoiceInteractionSessionService" />
-            </intent-filter>
         </service>
     </application>
 
